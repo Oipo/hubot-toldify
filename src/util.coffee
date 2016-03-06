@@ -1,3 +1,5 @@
+_ = require 'lodash'
+
 class Util
 
   #see https://gist.github.com/dperini/729294
@@ -41,7 +43,36 @@ class Util
   isValidUrl: (url) ->
     return re_weburl.test url
 
-  addRespondsToRobot: (robot, match, command) ->
-    return false
+  convertToData: (body, url) ->
+    bodyArray = body.toString().split '\n'
+
+    _.remove bodyArray, (n) ->
+      if n in ['', '```']
+        return true
+      return false
+
+    {url: url, data: bodyArray}
+
+  reloadAllData: (robot) ->
+    currentCommands = robot.brain.get "toldify-commands"
+
+    if not currentCommands? or currentCommands.length <= 0
+      return
+
+    _(currentCommands).forEach (val) =>
+      storedArray = robot.brain.get "toldify-command-#{val}"
+      url = storedArray.url
+
+      robot.http(url).get() (err, httpRes, body) =>
+        if err
+          return
+
+        if httpRes.statusCode isnt 200
+          return
+
+        storedData = @convertToData(body, url)
+
+        robot.brain.set "toldify-command-#{val}", storedData
+
 
 module.exports = Util

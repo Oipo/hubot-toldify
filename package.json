@@ -1,7 +1,7 @@
 {
   "name": "hubot-toldify",
   "description": "Always wanted to tell off your friends in IRC? Have hubot? Then this is what you want!",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "main": "lib/toldify.js",
   "author": "Michael de Lang",

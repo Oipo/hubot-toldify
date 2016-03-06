@@ -1,6 +1,7 @@
 # Description:
 #   Add a URL pointing to a file to the brain and a res.match filter
-#   and hubot will spam the channel with a random line from said file
+#   and hubot will spam the channel with a random line from said file.
+#   hubot-toldify will also reload all data once every hour.
 #
 # Dependencies:
 #   "hubot": "2.18.0"
@@ -11,16 +12,16 @@
 #
 # Commands:
 #   hubot toldify-add <url>, <command> - adds a raw file into the brain. Don't forget the comma.
+#   hubot toldify-remove <command> - Clears a command
 #   hubot toldify <command> - selects a random line from a stored command
 #
 # Notes:
 #   Currently, only empty lines and lines containing '```' are filtered out.
 #
 # Author:
-#   Oipo
+#   Oipo (Michael de Lang)
 
 util = require './util'
-_ = require 'lodash'
 
 module.exports = (robot) ->
 
@@ -42,24 +43,40 @@ module.exports = (robot) ->
         res.send "Request didn't come back HTTP 200 but with #{httpRes.statusCode} :("
         return
 
-      bodyArray = body.toString().split '\n'
+      storedData = utility.convertToData(body, url)
 
-      _.remove bodyArray, (n) ->
-        if n in ['', '```']
-          return true
-        return false
+      currentCommands = robot.brain.get "toldify-commands"
 
-      robot.brain.set command, bodyArray
+      if not currentCommands? or currentCommands.length <= 0
+        currentCommands = []
+
+      if currentCommands.indexOf command == -1
+        currentCommands.push(command)
+
+      robot.brain.set "toldify-command-#{command}", storedData
+      robot.brain.set "toldify-commands", currentCommands
 
       res.send "URL added with command #{command}"
+
+  robot.respond /toldify-remove/i, (res) ->
+    storedData = {}
+    robot.brain.set "toldify-command-#{command}", storedData
+
+    res.send "command #{command} cleared"
 
   robot.respond /toldify ([a-zA-Z0-9]*)/i, (res) ->
     command = res.match[1]
 
-    storedArray = robot.brain.get command
+    storedArray = robot.brain.get "toldify-command-#{command}"
 
-    if not storedArray? or storedArray.length <= 0
+    if not storedArray? or Object.keys(storedArray).length <= 0
       res.send "No such command"
       return
 
-    res.send res.random storedArray
+    res.send res.random storedArray.data
+
+  ((robot) ->
+    setTimeout (->
+      utility = new util
+      utility.reloadAllData robot
+    ), 60*60*1000)(robot)
