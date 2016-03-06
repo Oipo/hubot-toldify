@@ -6,7 +6,10 @@ Always wanted to tell off your friends in IRC? Have hubot? Then this is what you
 
 ## Example usage
 ```js
-
+@hubot toldify-add https://raw.githubusercontent.com/seiyria/status-list/master/rekt-list.md, rekt
+hubot: URL added with command rekt
+@hubot toldify rekt
+hubot: [x] REKT
 ```
     
 ## License
