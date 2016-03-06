@@ -1,0 +1,29 @@
+{
+  "name": "hubot-toldify",
+  "description": "Always wanted to tell off your friends in IRC? Have hubot? Then this is what you want!",
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "lib/toldify.js",
+  "author": "Michael de Lang",
+  "scripts": {
+    "lint": "coffeelint -f coffeelint.json src/ test/",
+    "test": "mocha --compilers coffee:coffee-script/register test/",
+    "build": "coffee -c -o lib/ src/",
+    "pretest": "npm run lint",
+    "prebuild": "npm run test",
+    "watch": "onchange src/ -- npm run build && echo Done",
+    "dev": "npm run watch",
+    "prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "coffee-script": "^1.10.0",
+    "coffeelint": "^1.14.2",
+    "hubot-test-helper": "^1.4.4",
+    "mocha": "^2.4.5",
+    "onchange": "^2.1.2"
+  },
+  "dependencies": {
+    "lodash": "^4.6.1"
+  }
+}
