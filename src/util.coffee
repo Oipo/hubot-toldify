@@ -65,9 +65,11 @@ class Util
 
       robot.http(url).get() (err, httpRes, body) =>
         if err
+          console.err err.stack
           return
 
         if httpRes.statusCode isnt 200
+          console.err "couldn't reload #{url} due to status code #{httpRes.statusCode}"
           return
 
         storedData = @convertToData(body, url)

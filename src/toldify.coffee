@@ -36,6 +36,7 @@ module.exports = (robot) ->
 
     robot.http(url).get() (err, httpRes, body) ->
       if err
+        console.err err.stack
         res.send "Encountered an error #{err}"
         return
 
